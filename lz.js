@@ -141,6 +141,27 @@ function lz_rgb32_decompress(in_buf, at, out_buf, type, default_alpha)
     return encoder - 1;
 }
 
+function flip_image_data(img)
+{
+    var w = img.width;
+    var h = img.height;
+    var temp_w = w;
+    var temp_h = h;
+    var buff = new Uint8Array(img.width * img.height * 4);
+    while (temp_h--)
+    {
+        while (temp_w--)
+        {
+            buff[(temp_h * w + temp_w) * 4] = img.data[((h - temp_h - 1) * w + temp_w) * 4];
+            buff[(temp_h * w + temp_w) * 4 + 1] = img.data[((h - temp_h -1) * w + temp_w) * 4 + 1];
+            buff[(temp_h * w + temp_w) * 4 + 2] = img.data[((h - temp_h -1) * w + temp_w) * 4 + 2];
+            buff[(temp_h * w + temp_w) * 4 + 3] = img.data[((h - temp_h -1) * w + temp_w) * 4 + 3];
+        }
+        temp_w = w;
+    }
+    img.data.set(buff);
+}
+
 function convert_spice_lz_to_web(context, lz_image)
 {
     var at;
@@ -150,6 +171,9 @@ function convert_spice_lz_to_web(context, lz_image)
         var ret = context.createImageData(lz_image.width, lz_image.height);
 
         at = lz_rgb32_decompress(u8, 0, ret.data, LZ_IMAGE_TYPE_RGB32, lz_image.type != LZ_IMAGE_TYPE_RGBA);
+        if (! lz_image.top_down)
+           flip_image_data(ret);
+
         if (lz_image.type == LZ_IMAGE_TYPE_RGBA)
             lz_rgb32_decompress(u8, at, ret.data, LZ_IMAGE_TYPE_RGBA, false);
     }
