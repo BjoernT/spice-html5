@@ -85,6 +85,15 @@ body
     padding: 0;
     background-color: #333333;
 }
+.spice-controlpanel
+{
+    text-align: left;
+    min-height: 30px;
+    height: 100%;
+    margin: 10px;
+    padding: 5px;
+    background-color: #333333;
+}
 .spice-message {
     width: 700px;
     height: 50px;
